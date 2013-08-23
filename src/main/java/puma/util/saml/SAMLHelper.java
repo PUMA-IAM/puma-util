@@ -37,7 +37,7 @@ import puma.util.exceptions.saml.WrongSignatureException;
  * @author jasper
  */
 public class SAMLHelper {
-	private static final Logger logger = Logger.getLogger(SAMLHelper.class.getName());
+	private static Logger logger = Logger.getLogger(SAMLHelper.class.getCanonicalName());
     public SAMLHelper() {
         SAMLHelper.initialize();     
     }
@@ -46,7 +46,7 @@ public class SAMLHelper {
         try {
             DefaultBootstrap.bootstrap();
         } catch (ConfigurationException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "Could not initialize SAML library", ex);
         }   
     }
     
@@ -80,13 +80,13 @@ public class SAMLHelper {
             field.setAccessible(true);
             return SAMLHelper.createElement(elementClassName, (QName) field.get(null));
         } catch (IllegalAccessException e) {
-            logger.log(Level.SEVERE, null, e);
+            logger.log(Level.SEVERE, "Could not create SAML element", e);
             return null;
         } catch (IllegalArgumentException e) {
-            logger.log(Level.SEVERE, null, e);      
+            logger.log(Level.SEVERE, "Could not create SAML element", e);      
             return null;      
         } catch (NoSuchFieldException e) {
-            logger.log(Level.SEVERE, null, e); 
+            logger.log(Level.SEVERE, "Could not create SAML element", e); 
             return null;           
         }
     }
@@ -109,16 +109,16 @@ public class SAMLHelper {
             }
             return (T) samlObject;
         } catch (UnmarshallingException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "Could not process string into SAML element", ex);
             throw new ElementProcessingException(message, ex.getMessage());
         } catch (ParserConfigurationException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE,  "Could not process string into SAML element", ex);
             throw new ElementProcessingException(message, ex.getMessage());            
         } catch (SAXException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE,  "Could not process string into SAML element", ex);
             throw new ElementProcessingException(message, ex.getMessage());            
         } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE,  "Could not process string into SAML element", ex);
             throw new ElementProcessingException(message, ex.getMessage());            
         }
     }
@@ -129,11 +129,11 @@ public class SAMLHelper {
             field.setAccessible(true); 
             return message.getElementQName().getLocalPart().equals((field.get(null)));
         } catch (IllegalAccessException e) {
-            logger.log(Level.SEVERE, null, e);
+            logger.log(Level.SEVERE, "Could not check for specified SAML element", e);
         } catch (NoSuchFieldException e) {
-            logger.log(Level.SEVERE, null, e);
+            logger.log(Level.SEVERE, "Could not check for specified SAML element", e);
         } catch (IllegalArgumentException e) {
-            logger.log(Level.SEVERE, null, e);
+            logger.log(Level.SEVERE, "Could not check for specified SAML element", e);
         }
         return false;
     }
@@ -142,14 +142,14 @@ public class SAMLHelper {
         try {
             authnResponse.validate(true);
         } catch (ValidationException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "Could not verify SAML response", ex);
             return false;
         }
         if (!authnResponse.getStatus().getStatusCode().getValue().equals(StatusCode.SUCCESS_URI)) {
             return false;
         }
         if (!SAMLHelper.verifySignature(authnResponse.getSignature())) {
-            logger.log(Level.SEVERE, null, new WrongSignatureException(authnResponse.getIssuer().getValue(), authnResponse.getInResponseTo()));
+            logger.log(Level.SEVERE, "Could not verify SAML response", new WrongSignatureException(authnResponse.getIssuer().getValue(), authnResponse.getInResponseTo()));
             return false;
         }
         for (Assertion ass: authnResponse.getAssertions()) {
@@ -165,14 +165,14 @@ public class SAMLHelper {
         try {
             attrResponse.validate(true);
         } catch (ValidationException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, "Could not verify SAML assertion", ex);
             return false;
         }
         if (attrResponse.getIssueInstant() != null && attrResponse.getIssueInstant().isAfterNow()) {
             return false;
         }
         if (!SAMLHelper.verifySignature(attrResponse.getSignature())) {
-            logger.log(Level.SEVERE, null, new WrongSignatureException(attrResponse.getIssuer().getValue(), "(signed assertion)"));
+            logger.log(Level.SEVERE, "Could not verify SAML assertion", new WrongSignatureException(attrResponse.getIssuer().getValue(), "(signed assertion)"));
             return false;
         }
         return true;

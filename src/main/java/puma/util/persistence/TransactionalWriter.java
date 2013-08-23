@@ -14,7 +14,7 @@ import javax.persistence.EntityTransaction;
  * @author jasper
  */
 public class TransactionalWriter {
-	private static final Logger logger = Logger.getLogger(TransactionalWriter.class.getName());
+	private static Logger logger = Logger.getLogger(TransactionalWriter.class.getCanonicalName());
     private EntityTransaction userTransaction;
     private EntityManager entityManager;
     public TransactionalWriter(EntityManagerProducer producer) {             
@@ -28,9 +28,9 @@ public class TransactionalWriter {
             this.entityManager.createQuery(namedQuery).executeUpdate();
             this.userTransaction.commit();           
         } catch (SecurityException ex) {
-        	logger.log(Level.SEVERE, null, ex);
+        	logger.log(Level.SEVERE, "Could not execute custom query", ex);
         } catch (IllegalStateException ex) {
-        	logger.log(Level.SEVERE, null, ex);
+        	logger.log(Level.SEVERE, "Could not execute custom query", ex);
         } 
     }
     
@@ -41,9 +41,9 @@ public class TransactionalWriter {
             this.entityManager.persist((T) object);
             this.userTransaction.commit();           
         } catch (SecurityException ex) {
-        	logger.log(Level.SEVERE, null, ex);
+        	logger.log(Level.SEVERE, "Could not perform write query", ex);
         } catch (IllegalStateException ex) {
-        	logger.log(Level.SEVERE, null, ex);
+        	logger.log(Level.SEVERE, "Could not perform write query", ex);
         } 
     }
     
@@ -54,9 +54,9 @@ public class TransactionalWriter {
             this.entityManager.remove((T) object);
             this.userTransaction.commit();                        
         } catch (SecurityException ex) {
-        	logger.log(Level.SEVERE, null, ex);
+        	logger.log(Level.SEVERE, "Could not perform remove query", ex);
         } catch (IllegalStateException ex) {
-        	logger.log(Level.SEVERE, null, ex);
+        	logger.log(Level.SEVERE, "Could not perform remove query", ex);
         }
     }
      
@@ -68,9 +68,9 @@ public class TransactionalWriter {
             this.userTransaction.commit();                        
             return t;
         } catch (SecurityException ex) {
-        	logger.log(Level.SEVERE, null, ex);
+        	logger.log(Level.SEVERE, "Could not perform merge query", ex);
         } catch (IllegalStateException ex) {
-        	logger.log(Level.SEVERE, null, ex);
+        	logger.log(Level.SEVERE, "Could not perform merge query", ex);
         }
         return null;
     }

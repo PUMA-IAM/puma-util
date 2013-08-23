@@ -17,7 +17,7 @@ import javax.crypto.spec.PBEKeySpec;
  * @author jasper
  */
 public class PasswordHasher {
-	private static final Logger logger = Logger.getLogger(PasswordHasher.class.getName());
+	private static Logger logger = Logger.getLogger(PasswordHasher.class.getCanonicalName());
 	private final static Integer numberOfIterations = 2000;
 	private final static Integer saltLength = 10;        
         private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
@@ -33,10 +33,10 @@ public class PasswordHasher {
                 SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
                 return skf.generateSecret(spec).getEncoded();
             } catch (NoSuchAlgorithmException ex) {
-            	logger.log(Level.SEVERE, null, ex);
+            	logger.log(Level.SEVERE, "Could not hash key", ex);
                 return new byte[8];
             } catch (InvalidKeySpecException ex) {
-            	logger.log(Level.SEVERE, null, ex);
+            	logger.log(Level.SEVERE, "Could not hash key", ex);
                 return new byte[8];                
             }
         }
