@@ -23,4 +23,9 @@ public class Role {
 			return true;
 		return false;
 	}
+	
+	@Override
+	public int hashCode() {
+		return this.roleName.hashCode();
+	}
 }
