@@ -5,7 +5,7 @@ public interface IPolicyDeploymentService {
 	
 	/**
 	 * Deploy a policy with the specified id at a given position in the policy set
-	 * @param index The position in the policy set at which point the policy needs to be evaluated.
+	 * @param index The position in the policy set at which point the policy needs to be evaluated. If a policy already exists at the given index, it will be given the next index, as will be done for all consecutive policies.
 	 * @param id Unique identifier to identify the policy with during the deployment lifetime.
 	 * @param policy XACML representation of the policy. This string can also consist of a description of policy sets, which contain the respective policies.
 	 * @return A response to indicate the success or failure of the operation.
@@ -28,10 +28,10 @@ public interface IPolicyDeploymentService {
 	
 	/**
 	 * Set the combination method for the evaluated policies
-	 * @param combinationId The identifier for the combination method (e.g. permit-overrides, deny-overrides, ...)
+	 * @param combination The identifier for the combination method (i.e. permit-overrides, deny-overrides, first-applicable, only-one-applicable)
 	 * @return A response to indicate the success or failure of the operation.
 	 */
-	public Object setPolicyCombinationMethod(Integer combinationId);
+	public Object setPolicyCombinationMethod(String combination);
 	
 	/**
 	 * Retrieve the position in the policy set where the policy resides.
