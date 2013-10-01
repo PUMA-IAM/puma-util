@@ -2,9 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>puma</groupId>
   <artifactId>PUMA-util</artifactId>
-  <version>1.0</version>
   <packaging>jar</packaging>
 
   <name>PUMA-util</name>
@@ -56,4 +54,9 @@
     	<version>7.0.39</version>
     </dependency>
   </dependencies>
+  <parent>
+  	<groupId>puma</groupId>
+  	<artifactId>main</artifactId>
+  	<version>1.0</version>
+  </parent>
 </project>
