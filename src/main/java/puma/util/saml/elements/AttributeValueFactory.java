@@ -3,6 +3,8 @@ package puma.util.saml.elements;
 import org.opensaml.saml2.core.AttributeValue;
 import org.opensaml.xml.Configuration;
 import org.opensaml.xml.schema.XSString;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.SAMLElementFactory;
 import puma.util.saml.SAMLHelper;
 
@@ -13,11 +15,11 @@ public class AttributeValueFactory implements SAMLElementFactory<XSString> {
 	private String attributeValue;
 	private String attributeType;
 	
-	public AttributeValueFactory(String value) {
+	public AttributeValueFactory(String value) throws SAMLException {
 		this(value, DEFAULT_TYPE);
 	}
 	
-	public AttributeValueFactory(String value, String type) {
+	public AttributeValueFactory(String value, String type) throws SAMLException {
 		SAMLHelper.initialize();
 		this.attributeType = type;
 		this.attributeValue = value;

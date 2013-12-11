@@ -2,6 +2,7 @@ package puma.util.saml.elements;
 
 import org.opensaml.saml2.core.SubjectConfirmation;
 
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLHelper;
 
@@ -19,7 +20,7 @@ public class SubjectConfirmationFactory implements ObjectFactory<SubjectConfirma
 	}
 	
 	@Override
-	public SubjectConfirmation produce() {
+	public SubjectConfirmation produce() throws SAMLException {
 		SubjectConfirmation result = SAMLHelper.createElement(SubjectConfirmation.class);
 		result.setMethod(this.method);		
 		return result;

@@ -8,6 +8,8 @@ import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.AttributeValue;
 import org.opensaml.xml.schema.XSAny;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLHelper;
 
@@ -23,7 +25,7 @@ public class CustomProxyExtensionFactory implements ObjectFactory<AttributeState
     }
     
     @Override
-    public AttributeStatement produce() {
+    public AttributeStatement produce() throws SAMLException {
         AttributeStatement stmt = SAMLHelper.createElement(AttributeStatement.class);
         Attribute attr = SAMLHelper.createElement(Attribute.class);
         XSAny val = SAMLHelper.createElement(XSAny.class, AttributeValue.DEFAULT_ELEMENT_NAME, XSAny.TYPE_NAME);

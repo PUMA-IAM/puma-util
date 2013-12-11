@@ -1,14 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package puma.util;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
@@ -17,28 +11,19 @@ import javax.crypto.spec.PBEKeySpec;
  * @author jasper
  */
 public class PasswordHasher {
-	private static Logger logger = Logger.getLogger(PasswordHasher.class.getCanonicalName());
 	private final static Integer numberOfIterations = 2000;
 	private final static Integer saltLength = 10;        
         private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
     
-	public static byte[] getHashValue(String password, byte[] salt) {
+	public static byte[] getHashValue(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
             return PasswordHasher.pbkdf2(password.toCharArray(), salt);
 	}
 	
-        private static byte[] pbkdf2(char[] password, byte[] salt) {
+        private static byte[] pbkdf2(char[] password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
             // http://crackstation.net/hashing-security.htm
-            try {
-                PBEKeySpec spec = new PBEKeySpec(password, salt, PasswordHasher.numberOfIterations, password.length + salt.length);
-                SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
-                return skf.generateSecret(spec).getEncoded();
-            } catch (NoSuchAlgorithmException ex) {
-            	logger.log(Level.SEVERE, "Could not hash key", ex);
-                return new byte[8];
-            } catch (InvalidKeySpecException ex) {
-            	logger.log(Level.SEVERE, "Could not hash key", ex);
-                return new byte[8];                
-            }
+            PBEKeySpec spec = new PBEKeySpec(password, salt, PasswordHasher.numberOfIterations, password.length + salt.length);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
+            return skf.generateSecret(spec).getEncoded();
         }
         
 	public static byte[] generateSalt() {

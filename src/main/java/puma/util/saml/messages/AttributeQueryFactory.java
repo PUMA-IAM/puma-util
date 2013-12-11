@@ -12,6 +12,8 @@ import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AttributeQuery;
 import org.opensaml.saml2.core.Issuer;
 import org.opensaml.saml2.core.Subject;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.CompoundFactory;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLElementFactory;
@@ -28,7 +30,7 @@ public class AttributeQueryFactory implements ObjectFactory<AttributeQuery>, Com
     private Issuer issuer;
     private List<SAMLElementFactory<? extends Attribute>> attributeFactories;
     
-    public AttributeQueryFactory(String assertionId, Subject subject, String destination, Issuer issuer) {
+    public AttributeQueryFactory(String assertionId, Subject subject, String destination, Issuer issuer) throws SAMLException {
         SAMLHelper.initialize();
         this.assertionIdentifier = assertionId;
         this.subject = subject;
@@ -38,7 +40,7 @@ public class AttributeQueryFactory implements ObjectFactory<AttributeQuery>, Com
     }
     
     @Override
-    public AttributeQuery produce() {
+    public AttributeQuery produce() throws SAMLException {
         DateTime now = new DateTime();
         AttributeQuery query = SAMLHelper.createElement(AttributeQuery.class);
         query.setID(this.assertionIdentifier);

@@ -42,7 +42,6 @@ package puma.util.saml.xacml;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
@@ -98,9 +97,6 @@ public class SAMLXACMLHelper {
 
 	private DocumentBuilder builder;
 
-	private static final Logger logger = Logger.getLogger(SAMLXACMLHelper.class
-			.getName());
-
 	public SAMLXACMLHelper() throws ParserConfigurationException,
 			ConfigurationException {
 		// always do this
@@ -121,7 +117,7 @@ public class SAMLXACMLHelper {
 	 * @param qname
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public <T> T create(Class<T> cls, QName qname) {
 		return (T) ((XMLObjectBuilder) Configuration.getBuilderFactory()
 				.getBuilder(qname)).buildObject(qname);

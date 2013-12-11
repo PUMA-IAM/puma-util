@@ -6,9 +6,8 @@ package puma.util.saml;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,26 +27,26 @@ import org.opensaml.xml.validation.ValidationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.exceptions.saml.ElementProcessingException;
 import puma.util.exceptions.saml.ServiceParameterException;
-import puma.util.exceptions.saml.WrongSignatureException;
 
 /**
  *
  * @author jasper
  */
 public class SAMLHelper {
-	private static Logger logger = Logger.getLogger(SAMLHelper.class.getCanonicalName());
-    public SAMLHelper() {
+    public SAMLHelper() throws SAMLException {
         SAMLHelper.initialize();     
     }
     
-    public static void initialize() {
+    public static void initialize() throws SAMLException {
         try {
-            DefaultBootstrap.bootstrap();
-        } catch (ConfigurationException ex) {
-            logger.log(Level.SEVERE, "Could not initialize SAML library", ex);
-        }   
+			DefaultBootstrap.bootstrap();
+		} catch (ConfigurationException e) {
+			throw new SAMLException(e);
+		}
     }
     
     /**
@@ -55,12 +54,21 @@ public class SAMLHelper {
      * @param elementClassName The class for which to make an element
      * @param qname The qualified name for the element to create
      * @return An object of class <code>elementClassName</code>.
+     * @throws IllegalAccessException 
+     * @throws NoSuchFieldException 
+     * @throws IllegalArgumentException 
+     * @throws SecurityException 
      */
     @SuppressWarnings("unchecked")
-    public static <T> T createElement(Class<T> elementClassName, QName qname) {
-        if (qname == null) {
-            return createElement(elementClassName);
-        }
+    public static <T> T createElement(Class<T> elementClassName, QName qname) throws SAMLException {
+        try {
+        	if (qname == null)
+				return createElement(elementClassName);
+        } catch (SecurityException e) {
+				throw new SAMLException(e);
+		} catch (IllegalArgumentException e) {
+			throw new SAMLException(e);
+		}
         return (T) ((XMLObjectBuilder<? extends XMLObject>) Configuration.getBuilderFactory().getBuilder(qname)).buildObject(qname);
     }
     
@@ -73,83 +81,87 @@ public class SAMLHelper {
      * Creates a SAML element corresponding to the given class name and with the specified qualified name
      * @param elementClassName The class for which to make an element. Takes DEFAULT_ELEMENT_NAME.
      * @return An object of class <code>elementClassName</code>.
+     * @throws NoSuchFieldException 
+     * @throws SecurityException 
+     * @throws IllegalAccessException 
+     * @throws IllegalArgumentException 
      */
-    public static <T> T createElement(Class<T> elementClassName) {
-        try {
-            Field field = elementClassName.getDeclaredField("DEFAULT_ELEMENT_NAME");
-            field.setAccessible(true);
-            return SAMLHelper.createElement(elementClassName, (QName) field.get(null));
-        } catch (IllegalAccessException e) {
-            logger.log(Level.SEVERE, "Could not create SAML element", e);
-            return null;
-        } catch (IllegalArgumentException e) {
-            logger.log(Level.SEVERE, "Could not create SAML element", e);      
-            return null;      
-        } catch (NoSuchFieldException e) {
-            logger.log(Level.SEVERE, "Could not create SAML element", e); 
-            return null;           
-        }
+    public static <T> T createElement(Class<T> elementClassName) throws SAMLException {
+		try {
+			Field field = elementClassName.getDeclaredField("DEFAULT_ELEMENT_NAME");
+			field.setAccessible(true);
+			return SAMLHelper.createElement(elementClassName, (QName) field.get(null));
+		} catch (SecurityException e) {
+			throw new SAMLException(e);
+		} catch (NoSuchFieldException e) {
+			throw new SAMLException(e);
+		} catch (IllegalArgumentException e) {
+			throw new SAMLException(e);
+		} catch (IllegalAccessException e) {
+			throw new SAMLException(e);
+		}
     }
     
     @SuppressWarnings("unchecked")
-	public static <T> T processString(String message, Class<T> className) throws ServiceParameterException, ElementProcessingException {
-        try {
-            DocumentBuilderFactory newFactory = DocumentBuilderFactory.newInstance();
-            newFactory.setNamespaceAware(true);
-            DocumentBuilder builder = newFactory.newDocumentBuilder();
-            Document doc = builder.parse(new ByteArrayInputStream(message.getBytes("UTF-8")));
-            Element samlElement = doc.getDocumentElement();            
-            Unmarshaller unmarshaller = Configuration.getUnmarshallerFactory().getUnmarshaller(samlElement);
-            if (unmarshaller == null) {
-                throw new ElementProcessingException(samlElement.toString(), "No unmarshaller");
-            }
-            XMLObject samlObject = unmarshaller.unmarshall(samlElement);
-            if (!SAMLHelper.isSpecifiedElement(samlObject, className)) {
-                throw new ServiceParameterException("Parameter " + message + " is not of type AttributeQuery");
-            }
-            return (T) samlObject;
-        } catch (UnmarshallingException ex) {
-            logger.log(Level.SEVERE, "Could not process string into SAML element", ex);
-            throw new ElementProcessingException(message, ex.getMessage());
-        } catch (ParserConfigurationException ex) {
-            logger.log(Level.SEVERE,  "Could not process string into SAML element", ex);
-            throw new ElementProcessingException(message, ex.getMessage());            
-        } catch (SAXException ex) {
-            logger.log(Level.SEVERE,  "Could not process string into SAML element", ex);
-            throw new ElementProcessingException(message, ex.getMessage());            
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE,  "Could not process string into SAML element", ex);
-            throw new ElementProcessingException(message, ex.getMessage());            
-        }
+	public static <T> T processString(String message, Class<T> className) throws SAMLException {
+    	try {
+	        DocumentBuilderFactory newFactory = DocumentBuilderFactory.newInstance();
+	        newFactory.setNamespaceAware(true);
+	        DocumentBuilder builder = newFactory.newDocumentBuilder();
+	        Document doc = builder.parse(new ByteArrayInputStream(message.getBytes("UTF-8")));
+	        Element samlElement = doc.getDocumentElement();            
+	        Unmarshaller unmarshaller = Configuration.getUnmarshallerFactory().getUnmarshaller(samlElement);
+	        if (unmarshaller == null) {
+	            throw new ElementProcessingException(samlElement.toString(), "No unmarshaller");
+	        }
+	        XMLObject samlObject = unmarshaller.unmarshall(samlElement);
+	        if (!SAMLHelper.isSpecifiedElement(samlObject, className)) {
+	            throw new ServiceParameterException("Parameter " + message + " is not of type AttributeQuery");
+	        }
+	        return (T) samlObject;
+    	} catch (ParserConfigurationException e) {
+			throw new SAMLException(e);
+		} catch (UnsupportedEncodingException e) {
+			throw new SAMLException(e);
+		} catch (SAXException e) {
+			throw new SAMLException(e);
+		} catch (IOException e) {
+			throw new SAMLException(e);
+		} catch (ElementProcessingException e) {
+			throw new SAMLException(e);
+		} catch (UnmarshallingException e) {
+			throw new SAMLException(e);
+		} catch (SecurityException e) {
+			throw new SAMLException(e);
+		} catch (IllegalArgumentException e) {
+			throw new SAMLException(e);
+		} catch (ServiceParameterException e) {
+			throw new SAMLException(e);
+		}
     }
 
-    private static <T> boolean isSpecifiedElement(XMLObject message, Class<T> className) {
-        try {
-            Field field = className.getDeclaredField("DEFAULT_ELEMENT_LOCAL_NAME");
-            field.setAccessible(true); 
-            return message.getElementQName().getLocalPart().equals((field.get(null)));
-        } catch (IllegalAccessException e) {
-            logger.log(Level.SEVERE, "Could not check for specified SAML element", e);
-        } catch (NoSuchFieldException e) {
-            logger.log(Level.SEVERE, "Could not check for specified SAML element", e);
-        } catch (IllegalArgumentException e) {
-            logger.log(Level.SEVERE, "Could not check for specified SAML element", e);
-        }
-        return false;
+    private static <T> boolean isSpecifiedElement(XMLObject message, Class<T> className) throws SAMLException {
+    	try {
+	        Field field = className.getDeclaredField("DEFAULT_ELEMENT_LOCAL_NAME");
+	        field.setAccessible(true); 
+	        return message.getElementQName().getLocalPart().equals((field.get(null)));
+    	} catch (NoSuchFieldException e) {
+			throw new SAMLException(e);
+		} catch (IllegalAccessException e) {
+			throw new SAMLException(e);
+		} 
     }
     
     public static Boolean verifyResponse(Response authnResponse) {
         try {
             authnResponse.validate(true);
         } catch (ValidationException ex) {
-            logger.log(Level.SEVERE, "Could not verify SAML response", ex);
             return false;
         }
         if (!authnResponse.getStatus().getStatusCode().getValue().equals(StatusCode.SUCCESS_URI)) {
             return false;
         }
         if (!SAMLHelper.verifySignature(authnResponse.getSignature())) {
-            logger.log(Level.SEVERE, "Could not verify SAML response", new WrongSignatureException(authnResponse.getIssuer().getValue(), authnResponse.getInResponseTo()));
             return false;
         }
         for (Assertion ass: authnResponse.getAssertions()) {
@@ -165,14 +177,12 @@ public class SAMLHelper {
         try {
             attrResponse.validate(true);
         } catch (ValidationException ex) {
-            logger.log(Level.SEVERE, "Could not verify SAML assertion", ex);
             return false;
         }
         if (attrResponse.getIssueInstant() != null && attrResponse.getIssueInstant().isAfterNow()) {
             return false;
         }
         if (!SAMLHelper.verifySignature(attrResponse.getSignature())) {
-            logger.log(Level.SEVERE, "Could not verify SAML assertion", new WrongSignatureException(attrResponse.getIssuer().getValue(), "(signed assertion)"));
             return false;
         }
         return true;

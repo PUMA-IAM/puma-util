@@ -6,6 +6,8 @@ package puma.util.saml.elements;
 
 import org.opensaml.saml2.core.NameID;
 import org.opensaml.saml2.core.Subject;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLHelper;
 
@@ -18,18 +20,18 @@ public class SubjectFactory implements ObjectFactory<Subject> {
     private String subjectIdentifier;
     private String format;
     
-    public SubjectFactory(String subject) { // LATER Set correct format
+    public SubjectFactory(String subject) throws SAMLException { // LATER Set correct format
         this(subject, SubjectFactory.DEFAULT_FORMAT);
     }
     
-    public SubjectFactory(String subject, String format) {
+    public SubjectFactory(String subject, String format) throws SAMLException {
         SAMLHelper.initialize();
         this.subjectIdentifier = subject;
         this.format = format;
     }
     
     @Override
-    public Subject produce() {
+    public Subject produce() throws SAMLException {
         Subject subject = SAMLHelper.createElement(Subject.class);       
         NameID nameId = SAMLHelper.createElement(NameID.class); // NameId
         nameId.setFormat(this.format); 

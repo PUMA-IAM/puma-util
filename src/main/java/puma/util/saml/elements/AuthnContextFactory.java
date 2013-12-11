@@ -5,6 +5,7 @@ import org.opensaml.saml2.core.AuthnContextClassRef;
 import org.opensaml.saml2.core.AuthnContextDecl;
 import org.opensaml.saml2.core.AuthnContextDeclRef;
 
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLHelper;
 
@@ -34,7 +35,7 @@ public class AuthnContextFactory implements ObjectFactory<AuthnContext> {
 	}
 	
 	@Override
-	public AuthnContext produce() {
+	public AuthnContext produce() throws SAMLException {
 		AuthnContext result = SAMLHelper.createElement(AuthnContext.class);
 		AuthnContextClassRef classRef = SAMLHelper.createElement(AuthnContextClassRef.class);
 		classRef.setAuthnContextClassRef(this.classRef);

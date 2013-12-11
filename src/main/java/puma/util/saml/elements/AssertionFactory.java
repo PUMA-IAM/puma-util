@@ -16,6 +16,7 @@ import org.opensaml.saml2.core.Issuer;
 import org.opensaml.saml2.core.Subject;
 import org.opensaml.xml.XMLObject;
 import puma.util.exceptions.ElementNotFoundException;
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.CompoundFactory;
 import puma.util.saml.CompoundFactoryHolder;
 import puma.util.saml.ObjectFactory;
@@ -34,23 +35,23 @@ public class AssertionFactory implements ObjectFactory<Assertion>, CompoundFacto
 	private List<AttributeStatementFactory> attributeStatementFactories;
 	private Map<Class<? extends XMLObject>, CompoundFactoryHolder<RetrievableCompoundFactory<? extends SAMLElementFactory<?>>>> iterators;
 
-	public AssertionFactory(String assertionId, Issuer issuer) {
+	public AssertionFactory(String assertionId, Issuer issuer) throws SAMLException {
 		this(assertionId, issuer, new DateTime());
 	}
 	
-	public AssertionFactory(String assertionId, Issuer issuer, DateTime issueInstant) {
+	public AssertionFactory(String assertionId, Issuer issuer, DateTime issueInstant) throws SAMLException {
 		this(assertionId, issuer, issueInstant, null, null);
 	}
 	
-	public AssertionFactory(String assertionId, Issuer issuer, DateTime issueInstant, Advice advice) {
+	public AssertionFactory(String assertionId, Issuer issuer, DateTime issueInstant, Advice advice) throws SAMLException {
 		this(assertionId, issuer, issueInstant, null, advice);
 	}
 	
-	public AssertionFactory(String assertionId, Issuer issuer, DateTime issueInstant, Subject subject) {
+	public AssertionFactory(String assertionId, Issuer issuer, DateTime issueInstant, Subject subject) throws SAMLException {
 		this(assertionId, issuer, issueInstant, subject, null);
 	}
 	
-	public AssertionFactory(String assertionId, Issuer issuer, DateTime issueInstant, Subject subject, Advice advice) {
+	public AssertionFactory(String assertionId, Issuer issuer, DateTime issueInstant, Subject subject, Advice advice) throws SAMLException {
 		SAMLHelper.initialize();
 		this.assertionIdentifier = assertionId;
 		this.issuer = issuer;
@@ -68,7 +69,7 @@ public class AssertionFactory implements ObjectFactory<Assertion>, CompoundFacto
 	
 	
 	@Override
-	public Assertion produce() {
+	public Assertion produce() throws SAMLException {
 		Assertion result = SAMLHelper.createElement(Assertion.class);
 		result.setID(this.assertionIdentifier);
 		if (this.advice != null)

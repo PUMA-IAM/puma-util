@@ -4,6 +4,8 @@ import org.joda.time.DateTime;
 import org.opensaml.saml2.core.AuthnRequest;
 import org.opensaml.saml2.core.RequestedAuthnContext;
 import org.opensaml.saml2.core.impl.RequestedAuthnContextBuilder;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.SAMLHelper;
 import puma.util.saml.elements.IssuerFactory;
 import puma.util.saml.elements.NameIDPolicyFactory;
@@ -18,7 +20,7 @@ public class AuthnRequestCloner implements SAMLObjectCloner<AuthnRequest> {
 	private String assertionConsumerServiceUrl;
 	private Boolean generateTime;
 	
-	public AuthnRequestCloner(String assertionId, String destination, String providerName, String assertionConsumerServiceUrl, Boolean generateTime) {
+	public AuthnRequestCloner(String assertionId, String destination, String providerName, String assertionConsumerServiceUrl, Boolean generateTime) throws SAMLException {
         SAMLHelper.initialize();
 		this.assertionIdentifier = assertionId;
 		this.messageDestination = destination;
@@ -27,12 +29,12 @@ public class AuthnRequestCloner implements SAMLObjectCloner<AuthnRequest> {
 		this.generateTime = generateTime;
 	}
 	
-	public AuthnRequestCloner(String assertionId, String destination, String providerName, String assertionConsumerServiceUrl) {
+	public AuthnRequestCloner(String assertionId, String destination, String providerName, String assertionConsumerServiceUrl) throws SAMLException {
 		this(assertionId, destination, providerName, assertionConsumerServiceUrl, AuthnRequestCloner.DEFAULT_GENERATE_TIME);
 	}
 	
 	@Override
-	public AuthnRequest cloneElement(AuthnRequest item) {
+	public AuthnRequest cloneElement(AuthnRequest item) throws SAMLException {
 		AuthnRequest result = SAMLHelper.createElement(AuthnRequest.class);
 		DateTime timestamp;
 		if (this.generateTime)

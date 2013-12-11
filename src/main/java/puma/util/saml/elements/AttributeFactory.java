@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.xml.schema.XSString;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.CompoundFactory;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLElementFactory;
@@ -24,11 +26,11 @@ public class AttributeFactory implements ObjectFactory<Attribute>, CompoundFacto
     private String format;
     private List<SAMLElementFactory<? extends XSString>> factories;
     
-    public AttributeFactory(String attributeFriendlyName) {
+    public AttributeFactory(String attributeFriendlyName) throws SAMLException {
         this(attributeFriendlyName, attributeFriendlyName, AttributeFactory.DEFAULT_FORMAT);
     }
     
-    public AttributeFactory(String attributeName, String attributeFriendlyName, String format) {
+    public AttributeFactory(String attributeName, String attributeFriendlyName, String format) throws SAMLException {
         SAMLHelper.initialize();
         this.attributeFriendlyName = attributeFriendlyName;
         this.attributeName = attributeName;
@@ -37,7 +39,7 @@ public class AttributeFactory implements ObjectFactory<Attribute>, CompoundFacto
     }
     
     @Override
-    public Attribute produce() {
+    public Attribute produce() throws SAMLException {
         Attribute attribute = SAMLHelper.createElement(Attribute.class);
         attribute.setNameFormat(this.format);
         attribute.setName(this.attributeName);

@@ -10,6 +10,8 @@ import org.opensaml.saml2.core.Response;
 import org.opensaml.saml2.core.Subject;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.XSString;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.SAMLHelper;
 import puma.util.saml.elements.AssertionFactory;
 import puma.util.saml.elements.AttributeFactory;
@@ -29,7 +31,7 @@ public class ResponseCloner implements SAMLObjectCloner<Response> {
 	private String destination;
 	private Issuer issuer;
 	
-	public ResponseCloner(String assertionId, String inResponseTo, String destination, Issuer issuer) {
+	public ResponseCloner(String assertionId, String inResponseTo, String destination, Issuer issuer) throws SAMLException {
 		SAMLHelper.initialize();
 		this.assertionIdentifier = assertionId;
 		this.inResponseTo = inResponseTo;
@@ -38,7 +40,7 @@ public class ResponseCloner implements SAMLObjectCloner<Response> {
 	}
 	
 	@Override
-	public Response cloneElement(Response item) {
+	public Response cloneElement(Response item) throws SAMLException {
 		Response result = (new ResponseFactory(this.assertionIdentifier, this.inResponseTo, this.destination, this.issuer, (new StatusFactory(item.getStatus().getStatusCode().getValue())).produce())).produce();
         result.setVersion(item.getVersion());
         result.setIssueInstant(item.getIssueInstant());

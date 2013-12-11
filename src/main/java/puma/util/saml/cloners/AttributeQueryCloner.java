@@ -6,6 +6,8 @@ import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.Issuer;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.XSAny;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.elements.AttributeFactory;
 import puma.util.saml.elements.AttributeStatementFactory;
 import puma.util.saml.elements.AttributeValueFactory;
@@ -25,7 +27,7 @@ public class AttributeQueryCloner implements SAMLObjectCloner<AttributeQuery> {
 	}
 	
 	@Override
-	public AttributeQuery cloneElement(AttributeQuery item) {
+	public AttributeQuery cloneElement(AttributeQuery item) throws SAMLException {
 		AttributeQuery result = (new AttributeQueryFactory(this.assertionIdentifier, (new SubjectFactory(item.getSubject().getNameID().getValue())).produce(), this.destination, this.issuer)).produce();
 		result.setIssueInstant(item.getIssueInstant());
         result.setVersion(item.getVersion());

@@ -6,6 +6,8 @@ package puma.util.saml.elements;
 
 import org.opensaml.saml2.core.Issuer;
 import org.opensaml.saml2.core.NameIDType;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLHelper;
 
@@ -18,19 +20,19 @@ public class IssuerFactory implements ObjectFactory<Issuer> {
     private String format;
     private String issuerName;
     
-    public IssuerFactory(String issuerName, String format) {
+    public IssuerFactory(String issuerName, String format) throws SAMLException {
     	SAMLHelper.initialize();
         this.issuerName = issuerName;
         this.format = format;
     	
     }
     
-    public IssuerFactory(String issuerName) {
+    public IssuerFactory(String issuerName) throws SAMLException {
     	this(issuerName, IssuerFactory.PREFERRED_FORMAT);
     }
     
     @Override
-    public Issuer produce() {
+    public Issuer produce() throws SAMLException {
         Issuer result = SAMLHelper.createElement(Issuer.class);
         result.setValue(this.issuerName);
         result.setFormat(this.format);

@@ -6,6 +6,8 @@ package puma.util.saml.elements;
 
 import org.opensaml.saml2.core.NameIDPolicy;
 import org.opensaml.saml2.core.NameIDType;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLHelper;
 
@@ -26,7 +28,7 @@ public class NameIDPolicyFactory implements ObjectFactory<NameIDPolicy> {
     }
 
     @Override
-    public NameIDPolicy produce() {
+    public NameIDPolicy produce() throws SAMLException {
         NameIDPolicy policy = SAMLHelper.createElement(NameIDPolicy.class);
         policy.setAllowCreate(true);
         policy.setFormat(this.format);

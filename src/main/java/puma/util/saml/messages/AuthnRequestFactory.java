@@ -10,6 +10,8 @@ import org.opensaml.saml2.core.AuthnContextComparisonTypeEnumeration;
 import org.opensaml.saml2.core.AuthnRequest;
 import org.opensaml.saml2.core.RequestedAuthnContext;
 import org.opensaml.saml2.core.impl.RequestedAuthnContextBuilder;
+
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLHelper;
 import puma.util.saml.elements.IssuerFactory;
@@ -27,7 +29,7 @@ public class AuthnRequestFactory implements ObjectFactory<AuthnRequest> {
     private String assertionConsumerServiceURL;
     private String binding;
     
-    public AuthnRequestFactory(String assertionId, String destination, String providerName, String assertionConsumerServiceUrl) {
+    public AuthnRequestFactory(String assertionId, String destination, String providerName, String assertionConsumerServiceUrl) throws SAMLException {
         SAMLHelper.initialize();
         this.destination = destination;
         this.providerName = providerName;
@@ -37,7 +39,7 @@ public class AuthnRequestFactory implements ObjectFactory<AuthnRequest> {
     }
 
     @Override
-    public AuthnRequest produce() {
+    public AuthnRequest produce() throws SAMLException {
         AuthnRequest result = SAMLHelper.createElement(AuthnRequest.class);
         result.setForceAuthn(false); // Sets whether the IdP should force the user to reauthenticate.
         result.setIsPassive(false); // Sets whether the IdP should refrain from interacting with the user during the authentication process.

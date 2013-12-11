@@ -10,6 +10,7 @@ import org.opensaml.saml2.core.Issuer;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.saml2.core.Status;
 
+import puma.util.exceptions.SAMLException;
 import puma.util.saml.CompoundFactory;
 import puma.util.saml.ObjectFactory;
 import puma.util.saml.SAMLElementFactory;
@@ -18,7 +19,6 @@ import puma.util.saml.elements.StatusFactory;
 
 public class ResponseFactory implements ObjectFactory<Response>, CompoundFactory<Assertion> {
 	private static final SAMLVersion DEFAULT_VERSION = SAMLVersion.VERSION_20;
-	private static final Status DEFAULT_STATUS = (new StatusFactory()).produce();
 	
 	private String assertionIdentifier;
 	private String inResponseTo;
@@ -27,15 +27,15 @@ public class ResponseFactory implements ObjectFactory<Response>, CompoundFactory
 	private Status status;
 	private List<SAMLElementFactory<? extends Assertion>> assertions;
 	
-	public ResponseFactory(String assertionId, String inResponseTo, String destination, Issuer issuer) {
-		this(assertionId, inResponseTo, destination, issuer, DEFAULT_STATUS);
+	public ResponseFactory(String assertionId, String inResponseTo, String destination, Issuer issuer) throws SAMLException {
+		this(assertionId, inResponseTo, destination, issuer, (new StatusFactory()).produce());
 	}
 	
-	public ResponseFactory(String assertionId, String inResponseTo, Issuer issuer, Status status) {
+	public ResponseFactory(String assertionId, String inResponseTo, Issuer issuer, Status status) throws SAMLException {
 		this(assertionId, inResponseTo, null, issuer, status);
 	}
 	
-	public ResponseFactory(String assertionId, String inResponseTo, String destination, Issuer issuer, Status status) {
+	public ResponseFactory(String assertionId, String inResponseTo, String destination, Issuer issuer, Status status) throws SAMLException {
 		SAMLHelper.initialize();
 		this.assertionIdentifier = assertionId;
 		this.inResponseTo = inResponseTo;
@@ -47,7 +47,7 @@ public class ResponseFactory implements ObjectFactory<Response>, CompoundFactory
 	
 	
 	@Override
-	public Response produce() {
+	public Response produce() throws SAMLException {
 		Response result = SAMLHelper.createElement(Response.class);
 		result.setID(this.assertionIdentifier);
 		result.setInResponseTo(this.inResponseTo);
