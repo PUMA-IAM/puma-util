@@ -96,6 +96,10 @@ public class TimerFactory {
 	 * for a timer above).
 	 */
 	public void resetAllTimers() {
+		/*for (String next: this.metricRegistry.getTimers().keySet()) {
+			this.metricRegistry.remove(next);
+			this.metricRegistry.timer(next);
+		}*/
 		this.metricRegistry = new MetricRegistry();
 	}
 	

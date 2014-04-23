@@ -18,5 +18,11 @@ public interface MetricsProvider extends Remote {
 	 * @return
 	 */
 	public String getMetrics() throws RemoteException;
+	
+	/**
+	 * Resets all the metrics for performing a new test
+	 * 
+	 */
+	public void resetMetrics() throws RemoteException;
 
 }
