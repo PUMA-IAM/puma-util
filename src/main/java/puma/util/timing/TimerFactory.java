@@ -101,6 +101,7 @@ public class TimerFactory {
 			this.metricRegistry.timer(next);
 		}*/
 		this.metricRegistry = new MetricRegistry();
+		// andere optie: this.metricRegistry.removeMatching(MetricFilter.ALL);
 	}
 	
 	/**
